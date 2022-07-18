@@ -1,0 +1,94 @@
+class Intersections
+{
+    public bool RayLine(Point p1, Point p2, Point m1, 
+                  Point m2, out Point pCross, out Info info)
+    {
+        info = new Info();
+
+        //Данные прямой
+        double a = m2.Y - m1.Y;
+        double b = m1.X - m2.X;
+        double c = -m1.X * m2.Y + m1.Y * m2.X;
+
+        // Данные луча
+        double v = p2.X - p1.X;
+        double w = p2.Y - p1.Y;
+
+
+        // **** Явное непересечение до вычисления параметра t ****
+
+        //Луч и прямая должны быть определены
+        if (v == 0 && w == 0 && a == 0 && b == 0)
+        {
+            info.Id = 10;
+            info.Message = "Луч и прямая не определённы";
+            return false;
+        }
+        else if (v == 0 && w == 0)
+        {
+             info.Id = 11;
+             info.Message = "Луч не определён";
+             return false;
+        }
+        else if (a == 0 && b == 0)
+        {
+                info.Id = 12;
+                info.Message = "Прямая не определённа";
+                return false;
+        }
+
+
+        //Подставим координаты луча в уравнение прямой.
+        //Если уравнение верно, то две точки луча лежат на прямой.
+
+        double result1 = a * p1.X + b * p1.Y + c;
+        double result2 = a * p2.X + b * p2.Y + c;
+
+        if (result1 == 0 && result2 == 0)
+        {
+            info.Id = 20;
+            info.Message = "Прямая и луч совпадают";
+            return false;
+        }
+
+
+        //Для вычисления параллельности луча и прямой 
+        //необходимо сравнить их векторы.
+        //Если направление их совпадает, 
+        //то значит луч и прямая параллельны
+        if ((a * v + b * w) == 0)
+        {
+            info.Id = 21;
+            info.Message = "Луч и прямая параллельны";
+            return false;
+        }
+
+
+        // **** Вычисляем точку пересечения ****
+
+        // Проверка факта пересечения
+        double t = (-a * p1.X - b * p1.Y - c) / (a * v + b * w);
+
+        if (t < 0)
+        {
+            info.Id = 20;
+            info.Message = "Пересечения нет";
+            return false;
+        }
+
+        // Координаты точки пересечения
+        pCross.X = p1.X + v * t;
+        pCross.Y = p1.Y + w * t;
+
+         info.Id = 0;
+         info.Message = "Пересечение есть";
+
+         return true;
+    }
+}
+
+public class Info
+{
+    public string Message;
+    public int Id;
+}
